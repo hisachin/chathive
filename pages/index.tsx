@@ -36,15 +36,13 @@ export default function Home() {
     required: true,
     onUnauthenticated: () => router.push('/login'),
   });
-  const [returnSourceDocuments, setReturnSourceDocuments] =
-    useState<boolean>(false);
+  const [returnSourceDocuments, setReturnSourceDocuments] = useState<boolean>(false);
   const [modelTemperature, setModelTemperature] = useState<number>(0.5);
   const [userEmail, setUserEmail] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [userImage, setUserImage] = useState<string>('');
 
-  const { namespaces, selectedNamespace, setSelectedNamespace } =
-    useNamespaces(userEmail);
+  const { namespaces, selectedNamespace, setSelectedNamespace } = useNamespaces(userEmail);
 
   const {
     chatList,
@@ -86,6 +84,9 @@ export default function Home() {
   }
 
   const { messages, history } = messageState;
+
+  console.log("messages",messages);
+  console.log("data chatId",chatId);
 
   const messageListRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);

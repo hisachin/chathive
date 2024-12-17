@@ -22,7 +22,7 @@ const SourceDocumentsToggle: React.FC<SourceDocumentsToggleProps> = ({
       <span className="flex flex-col">
         <Switch.Label
           as="span"
-          className="text-xs sm:text-sm font-medium leading-6 text-blue-400"
+          className="text-xs sm:text-sm font-medium leading-6 text-white"
           passive
         >
           Include source documents
@@ -35,8 +35,8 @@ const SourceDocumentsToggle: React.FC<SourceDocumentsToggleProps> = ({
           setReturnSourceDocuments(value);
         }}
         className={classNames(
-          checked ? 'bg-indigo-600' : 'bg-gray-200',
-          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
+          checked ? 'bg-orange-600' : 'bg-gray-200',
+          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-600 focus:ring-offset-2',
         )}
       >
         <span

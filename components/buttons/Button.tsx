@@ -19,7 +19,7 @@ const Button = ({
 
   if (buttonType === 'primary') {
     buttonClassName +=
-      ' bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
+      ' bg-orange-600 text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600';
   } else if (buttonType === 'secondary') {
     buttonClassName +=
       ' bg-gray-800 text-gray-400 hover:bg-gray-800 hover:text-white';

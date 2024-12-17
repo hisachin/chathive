@@ -29,8 +29,8 @@ const Header: React.FC<HeaderProps> = ({
       </button>
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
-        <span className="w-full text-center items-center rounded-md bg-blue-400/10 px-2 py-1 text-xs sm:text-sm md:text-md md:text-lg font-medium text-blue-400 ring-1 ring-inset ring-pink-blue/30">
-          DOC CHATBOT
+        <span className="w-full text-center items-center rounded-md bg-blue-400/10 px-2 py-1 text-xs sm:text-sm md:text-md md:text-lg font-medium text-orange-400 ring-1 ring-inset ring-pink-orange/30">
+          ChatHive
         </span>
 
         <div className="flex items-center gap-x-4 lg:gap-x-6">

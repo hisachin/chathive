@@ -1,56 +1,100 @@
-import { OpenAI } from 'langchain/llms/openai';
-import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { ConversationalRetrievalQAChain } from 'langchain/chains';
+import { ChatOpenAI } from '@langchain/openai';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { RunnableSequence, RunnableMap } from '@langchain/core/runnables';
+import { StringOutputParser } from '@langchain/core/output_parsers';
+import type { Document } from 'langchain/document';
+import { HfInference } from '@huggingface/inference';
 
-const CONDENSE_PROMPT = `Given the chat history and a follow-up question, rephrase the follow-up question to be a standalone question that encompasses all necessary context from the chat history.
+const CONDENSE_TEMPLATE = `Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question.
 
-Chat History:
-{chat_history}
+<chat_history>
+  {chat_history}
+</chat_history>
 
-Follow-up input: {question}
+Follow-Up Input: {question}
+Standalone question:`;
 
-Make sure your standalone question is self-contained, clear, and specific. Rephrased standalone question:`;
+const QA_TEMPLATE = `You are an expert researcher. Use the following pieces of context to answer the question at the end.
+If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
+If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.
 
-// --------------------------------------------------
+<context>
+  {context}
+</context>
 
-const QA_PROMPT = `You are an intelligent AI assistant designed to interpret and answer questions and instructions based on specific provided documents. The context from these documents has been processed and made accessible to you. 
-
-Your mission is to generate answers that are accurate, succinct, and comprehensive, drawing upon the information contained in the context of the documents. If the answer isn't readily found in the documents, you should make use of your training data and understood context to infer and provide the most plausible response.
-
-You are also capable of evaluating, comparing and providing opinions based on the content of these documents. Hence, if asked to compare or analyze the documents, use your AI understanding to deliver an insightful response.
-
-If the query isn't related to the document context, kindly inform the user that your primary task is to answer questions specifically related to the document context.
-
-Here is the context from the documents:
-
-Context: {context}
-
-Here is the user's question:
+<chat_history>
+  {chat_history}
+</chat_history>
 
 Question: {question}
+Helpful answer in markdown:`;
 
-Provide your response in markdown format. Make sure you provide extremely long answers each time.`;
+const hf = new HfInference(process.env.HUGGING_FACE_API_KEY);
 
-// Creates a ConversationalRetrievalQAChain object that uses an OpenAI model and a PineconeStore vectorstore
-export const makeChain = (
-  vectorstore: PineconeStore,
-  returnSourceDocuments: boolean,
-  modelTemperature: number,
-) => {
-  const model = new OpenAI({
-    temperature: modelTemperature, // increase temepreature to get more creative answers
-    modelName: 'gpt-3.5-turbo', //change this to gpt-4 if you have access
-  });
+const combineDocumentsFn = (docs: Document[], separator = '\n\n') => {
+  const serializedDocs = docs.map((doc) => doc.pageContent);
+  return serializedDocs.join(separator);
+};
 
-  // Configures the chain to use the QA_PROMPT and CONDENSE_PROMPT prompts and to not return the source documents
-  const chain = ConversationalRetrievalQAChain.fromLLM(
-    model,
-    vectorstore.asRetriever(),
-    {
-      qaTemplate: QA_PROMPT,
-      questionGeneratorTemplate: CONDENSE_PROMPT,
-      returnSourceDocuments,
+const hfModelInference = async (input:string):Promise<string> => {
+  const response = await hf.textGeneration({
+    model: 'google/flan-t5-base', // Open-source Hugging Face model
+    inputs: input,
+    parameters: {
+      max_length: 500,
+      temperature: 0.3,
     },
-  );
-  return chain;
+  });
+  return response.generated_text.trim();
+};
+
+const hfModelAdapter = async (input: any): Promise<string> => {
+  if (typeof input === 'string') {
+    return hfModelInference(input);
+  } else if (input.toString) {
+    return hfModelInference(input.toString());
+  }
+  throw new Error('Invalid input for Hugging Face inference');
+};
+
+export const makeChain = (retriever: any) => {
+  const condenseQuestionPrompt =
+    ChatPromptTemplate.fromTemplate(CONDENSE_TEMPLATE);
+  const answerPrompt = ChatPromptTemplate.fromTemplate(QA_TEMPLATE);
+
+  // const model = new ChatOpenAI({
+  //   temperature: 0, // Adjust temperature for creativity
+  //   modelName: 'gpt-3.5-turbo', // Change to gpt-4 if available
+  // });
+
+  // Rephrase the initial question into a standalone question
+  const standaloneQuestionChain = RunnableSequence.from([
+    condenseQuestionPrompt,
+    hfModelAdapter,
+    new StringOutputParser(),
+  ]);
+
+  // Retrieve documents and combine them into context
+  const retrievalChain = retriever.pipe(combineDocumentsFn);
+
+  // Generate an answer to the standalone question
+  const answerChain = RunnableMap.from({
+    context: RunnableSequence.from([
+      (input) => input.question,
+      retrievalChain,
+    ]),
+    chat_history: (input:any) => input.chat_history,
+    question: (input:any) => input.question,
+  })
+    .pipe(answerPrompt)
+    .pipe(hfModelAdapter)
+    .pipe(new StringOutputParser());
+
+  // Chain together the standalone question generation and answering
+  const conversationalRetrievalQAChain = RunnableMap.from({
+    question: standaloneQuestionChain,
+    chat_history: (input:any) => input.chat_history,
+  }).pipe(answerChain);
+
+  return conversationalRetrievalQAChain;
 };

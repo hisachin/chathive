@@ -20,7 +20,7 @@ const ListOfNamespaces = ({
 
   return (
     <li>
-      <div className="text-xs sm:text-sm text-blue-400 font-semibold leading-6 ">
+      <div className="text-xs sm:text-sm text-white font-semibold leading-6 ">
         Your namespaces
       </div>
       <ul role="list" className="-mx-2 mt-2 space-y-1 px-2">

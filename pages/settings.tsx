@@ -137,48 +137,20 @@ export default function Settings() {
 
     setLoading(false);
   };
+
+  
   return (
-    <div className="relative isolate min-h-screen bg-gray-900">
+    <div className="relative isolate min-h-screen bg-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
         <div className="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
-            <div className="absolute inset-y-0 left-0 -z-10 w-full h-full overflow-hidden ring-1 ring-white/5 lg:w-1/2">
-              <svg
-                className="absolute inset-0 h-full w-full stroke-gray-700 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
-                aria-hidden="true"
-              >
-                <defs>
-                  <pattern
-                    id="54f88622-e7f8-4f1d-aaf9-c2f5e46dd1f2"
-                    width={200}
-                    height={200}
-                    x="100%"
-                    y={-1}
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <path d="M130 200V.5M.5 .5H200" fill="none" />
-                  </pattern>
-                </defs>
-                <svg
-                  x="100%"
-                  y={-1}
-                  className="overflow-visible fill-gray-800/20"
-                >
-                  <path d="M-470.5 0h201v201h-201Z" strokeWidth={0} />
-                </svg>
-                <rect
-                  width="100%"
-                  height="100%"
-                  strokeWidth={0}
-                  fill="url(#54f88622-e7f8-4f1d-aaf9-c2f5e46dd1f2)"
-                />
-              </svg>
+            <div className="absolute inset-y-0 left-0 -z-10 w-full h-full overflow-hidden ring-1 ring-white/5">
               <div
                 className="absolute -left-56 top-[calc(100%-13rem)] transform-gpu blur-3xl lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
                 aria-hidden="true"
               >
                 <div
-                  className="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-br from-[#80caff] to-[#4f46e5] opacity-20"
+                  className="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-br from-[#FF5733] to-[#a4321a] opacity-20"
                   style={{
                     clipPath:
                       'polygon(74.1% 56.1%, 100% 38.6%, 97.5% 73.3%, 85.5% 100%, 80.7% 98.2%, 72.5% 67.7%, 60.2% 37.8%, 52.4% 32.2%, 47.5% 41.9%, 45.2% 65.8%, 27.5% 23.5%, 0.1% 35.4%, 17.9% 0.1%, 27.6% 23.5%, 76.1% 2.6%, 74.1% 56.1%)',
@@ -188,18 +160,18 @@ export default function Settings() {
             </div>
 
             <div className="max-w-xl mx-auto">
-              <h2 className="mb-4 text-xl text-center sm:text-3xl sm:text-left font-bold text-white">
-                Your Pinecone namespaces
+              <h2 className="mb-4 text-xl text-center sm:text-3xl sm:text-left font-bold text-slate-900">
+                Your Namespaces
               </h2>
               {namespaces.length > 0 ? (
                 <>
                   <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
-                    <span className="rounded-md bg-blue-400/10 px-3 py-2.5 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-400/30 mb-4 sm:mb-0">
+                    <span className="rounded-md bg-orange-400/10 px-3 py-2.5 text-xs font-medium text-orange-400 ring-1 ring-inset ring-blue-400/30 mb-4 sm:mb-0">
                       Signed in as {userEmail}
                     </span>
                     <button
                       type="button"
-                      className="rounded-md bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200"
+                      className="rounded-md bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-700 hover:bg-slate-200"
                       onClick={() => router.push('/')}
                     >
                       Chat
@@ -216,7 +188,7 @@ export default function Settings() {
                 {namespaces.map((namespace) => (
                   <li
                     key={namespace}
-                    className="bg-gray-800/60 rounded-lg shadow px-5 py-4 flex items-center justify-between space-x-4"
+                    className="bg-slate-800/60 rounded-lg shadow px-5 py-4 flex items-center justify-between space-x-4"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">
@@ -227,13 +199,13 @@ export default function Settings() {
                       {selectedNamespace === namespace ? (
                         <>
                           <button
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700                   focus:ring-indigo-500"
+                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700                   focus:ring-orange-500"
                             onClick={() => handleDelete(selectedNamespace)}
                           >
                             Confirm Delete
                           </button>
                           <button
-                            className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-gray-300 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-slate-700 hover:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                             onClick={() => setSelectedNamespace('')}
                           >
                             Cancel
@@ -241,7 +213,7 @@ export default function Settings() {
                         </>
                       ) : (
                         <button
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                           onClick={() => setSelectedNamespace(namespace)}
                         >
                           Delete
@@ -269,11 +241,11 @@ export default function Settings() {
         <div className="px-6 pb-24 pt-20 sm:pb-32 lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg ">
             {/* upload area */}
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
               {' '}
               Creating namespaces
             </h2>
-            <p className="mt-4 sm:mt-6 text-sm sm:text-lg leading-6 sm:leading-8 text-gray-300">
+            <p className="mt-4 sm:mt-6 text-sm sm:text-lg leading-6 sm:leading-8 text-slate-700">
               {' '}
               Treat namespaces like topics of conversation. You can create as
               many as you like, and they can be used to organize your data.
@@ -284,10 +256,10 @@ export default function Settings() {
               {...getRootProps()}
             >
               {' '}
-              <label className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-6 sm:p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer">
+              <label className="relative block w-full rounded-lg border-2 border-dashed border-slate-700 p-6 sm:p-12 text-center hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 cursor-pointer">
                 {' '}
                 <svg
-                  className="mx-auto h-8 sm:h-12 w-8 sm:w-12 text-gray-400"
+                  className="mx-auto h-8 sm:h-12 w-8 sm:w-12 text-slate-400"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -305,7 +277,7 @@ export default function Settings() {
                     onClick: (event) => event.stopPropagation(),
                   })}
                 />
-                <span className="mt-2 sm:mt-2 block text-xs sm:text-sm font-semibold text-gray-100">
+                <span className="mt-2 sm:mt-2 block text-xs sm:text-sm font-semibold text-slate-400">
                   {selectedFiles.length > 0
                     ? selectedFiles.map((file) => file.name).join(', ')
                     : 'Drag and drop or click to select files to upload'}
@@ -315,7 +287,7 @@ export default function Settings() {
             {/* upload area */}
             <div className="mt-4 sm:mt-8 flex justify-end">
               <button
-                className="rounded-md bg-indigo-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 text-center text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="rounded-md bg-orange-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 text-center text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
                 onClick={handleUpload}
               >
                 {uploadMessage ? uploadMessage : 'Upload files'}
@@ -325,12 +297,12 @@ export default function Settings() {
               <div className="flex items-center">
                 <label
                   htmlFor="chunkSize"
-                  className="block text-sm font-medium leading-6 text-gray-300"
+                  className="block text-sm font-medium leading-6 text-slate-700"
                 >
                   Chunk size
                 </label>
                 <QuestionMarkCircleIcon
-                  className="ml-2 h-5 w-5 text-gray-300 hover:text-gray-400 cursor-pointer"
+                  className="ml-2 h-5 w-5 text-slate-700 hover:text-slate-400 cursor-pointer"
                   onClick={() => setShowChunkSizeModal(true)}
                 />
               </div>
@@ -343,10 +315,14 @@ export default function Settings() {
                   step={100}
                   value={chunkSize}
                   onChange={(e) => setChunkSize(Number(e.target.value))}
-                  className="w-full"
+                  className="w-full accent-orange-500"
+                  style={{
+                    '--tw-range-track': 'bg-slate-700',
+                    '--tw-range-thumb': 'bg-orange-500',
+                  }}
                 />
 
-                <div className="text-center text-gray-100">{chunkSize}</div>
+                <div className="text-center text-slate-100">{chunkSize}</div>
               </div>
             </div>
 
@@ -358,12 +334,12 @@ export default function Settings() {
               <div className="flex items-center">
                 <label
                   htmlFor="overlapSize"
-                  className="block text-sm font-medium leading-6 text-gray-300"
+                  className="block text-sm font-medium leading-6 text-slate-700"
                 >
                   Overlap size
                 </label>
                 <QuestionMarkCircleIcon
-                  className="ml-2 h-5 w-5 text-gray-300 cursor-pointer hover:text-gray-400"
+                  className="ml-2 h-5 w-5 text-slate-700 cursor-pointer hover:text-slate-400"
                   onClick={() => setShowOverlapSizeModal(true)}
                 />
               </div>
@@ -376,9 +352,13 @@ export default function Settings() {
                   step={5}
                   value={overlapSize}
                   onChange={(e) => setOverlapSize(Number(e.target.value))}
-                  className="w-full"
+                  className="w-full accent-orange-500"
+                  style={{
+                    '--tw-range-track': 'bg-slate-700',
+                    '--tw-range-thumb': 'bg-orange-500',
+                  }}
                 />
-                <div className="text-center text-gray-100">{overlapSize}%</div>
+                <div className="text-center text-slate-100">{overlapSize}%</div>
               </div>
             </div>
             <OverlapSizeModal
@@ -391,7 +371,7 @@ export default function Settings() {
                 <div className="sm:col-span-2">
                   <label
                     htmlFor="email"
-                    className="block text-sm font-semibold leading-6 text-white"
+                    className="block text-sm font-semibold leading-6 text-slate-900"
                   >
                     Namespace name
                   </label>
@@ -399,7 +379,7 @@ export default function Settings() {
                   <div className="mt-2.5">
                     <input
                       type="text"
-                      className="block w-full rounded-md border-0 bg-white/5 px-2 sm:px-3.5 py-1.5 sm:py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 text-sm sm:text-base sm:leading-6 opacity-50"
+                      className="block w-full rounded-md border-0 bg-white/5 px-2 sm:px-3.5 py-1.5 sm:py-2 text-sllate-900 shadow-sm ring-1 ring-inset ring-gray/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 text-sm sm:text-base sm:leading-6 opacity-50"
                       value={namespaceName}
                       onChange={(e) => setNamespaceName(e.target.value)}
                     />
@@ -410,7 +390,7 @@ export default function Settings() {
             {namespaceName && (
               <div className="mt-4 sm:mt-8 flex justify-end">
                 <button
-                  className="rounded-md bg-indigo-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 text-center text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                  className="rounded-md bg-orange-500 px-2.5 sm:px-3.5 py-1.5 sm:py-2.5 text-center text-sm sm:text-base font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
                   onClick={handleIngest}
                 >
                   {loading ? 'Ingesting...' : message ? message : 'Ingest'}

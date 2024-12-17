@@ -20,10 +20,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 }
 
 export function useChats(namespace: string, userEmail: string | undefined) {
-  const [chatList, setChatList] = useLocalStorage<string[]>(
-    `chatList-${namespace}`,
-    [],
-  );
+  const [chatList, setChatList] = useState([]);
   const [chatNames, setChatNames] = useLocalStorage<{ [key: string]: string }>(
     `chatNames-${namespace}`,
     {},
@@ -34,6 +31,17 @@ export function useChats(namespace: string, userEmail: string | undefined) {
   function updateChatName(chatId: string, newChatName: string) {
     const updatedChatNames = { ...chatNames, [chatId]: newChatName };
     setChatNames(updatedChatNames);
+  }
+
+  async function getNamespaceChats() {
+    try {
+      const { data } = await axios.get(`/api/getNamespaceChats?namespace=${namespace}&userEmail=${userEmail}`);
+      const updatedChatList = [...data];
+      setChatList(updatedChatList);
+    } catch (error) {
+      console.error('Failed to create new chat:', error);
+    }
+    return ;
   }
 
   async function createChat() {
@@ -78,6 +86,10 @@ export function useChats(namespace: string, userEmail: string | undefined) {
     }
   }
 
+  useEffect(() => {
+    getNamespaceChats();
+  },[namespace,userEmail]);
+
   return {
     chatList,
     selectedChatId,
@@ -87,5 +99,6 @@ export function useChats(namespace: string, userEmail: string | undefined) {
     chatNames,
     updateChatName,
     userEmail,
+    getNamespaceChats
   };
 }

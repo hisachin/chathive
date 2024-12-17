@@ -31,7 +31,7 @@ function MessageList({
           {messages.map((message, index) => {
             const isApiMessage = message.type === 'apiMessage';
             const messageClasses = ` ${
-              isApiMessage ? 'bg-gray-700/50' : 'bg-gray-800'
+              isApiMessage ? 'bg-gray-700' : 'bg-gray-800'
             }`;
 
             return (
@@ -42,11 +42,11 @@ function MessageList({
                       <span
                         className={`mt-2 inline-flex items-center rounded-md px-2 py-1 text-xs sm:text-sm font-medium ring-1 ring-inset ${
                           isApiMessage
-                            ? 'bg-indigo-400/10 text-indigo-400 ring-indigo-400/30'
+                            ? 'bg-orange-400/10 text-orange-400 ring-orange-400/30'
                             : 'bg-purple-400/10 text-purple-400 ring-purple-400/30'
                         }`}
                       >
-                        {isApiMessage ? 'pdf-chatbot' : userName}
+                        {isApiMessage ? 'ChatHive Assistant' : userName}
                       </span>
                       <div className="mx-auto max-w-full">
                         <ReactMarkdown

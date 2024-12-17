@@ -86,13 +86,7 @@ const SidebarList: React.FC<SidebarListProps> = ({
               updateChatName={updateChatName}
               deleteChat={deleteChat}
             />
-          ) : (
-            <div className="text-xs font-semibold leading-6 text-red-400">
-              {selectedNamespace
-                ? 'No chats in this namespace'
-                : 'Select a namespace to display chats'}
-            </div>
-          )}
+          ) : <></>}
 
           {/* desktop */}
         </li>

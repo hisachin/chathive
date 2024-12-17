@@ -17,10 +17,10 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center align-center h-screen px-4">
-      <h1 className="text-xl md:text-3xl text-center font-semibold text-gray-100">
-        Welcome to doc-chatbot
+      <h1 className="text-xl md:text-3xl text-center font-semibold text-slate-900">
+        Welcome to ChatHive
       </h1>
-      <p className="text-md md:text-xl text-center text-gray-100 mt-4">
+      <p className="text-md md:text-xl text-center text-slate-500 mt-4">
         {selectedNamespace ? noChatsMessage : selectNamespaceMessage}
       </p>
     </div>

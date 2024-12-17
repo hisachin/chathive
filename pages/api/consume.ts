@@ -1,28 +1,26 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
+import { HuggingFaceInferenceEmbeddings } from '@langchain/community/embeddings/hf';
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
-import { DocxLoader } from 'langchain/document_loaders/fs/docx';
-import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
 import { pinecone } from '@/utils/pinecone-client';
+import { NextApiRequest, NextApiResponse } from 'next';
 import Namespace from '@/models/Namespace';
-import connectDB from '@/utils/mongoConnection';
 
 const filePath = process.env.NODE_ENV === 'production' ? '/tmp' : 'tmp';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  const { namespaceName, userEmail, chunkSize, overlapSize } = req.query;
+export function convertToAscii(inputString: string) {
+  const asciiString = inputString.replace(/[^\x00-\x7F]+/g, "");
+  return asciiString;
+}
 
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { namespaceName,userEmail, chunkSize = '1000', overlapSize = '200' } = req.query;
   const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME ?? '';
 
   try {
-    await connectDB();
+    if (!PINECONE_INDEX_NAME) {
+      throw new Error('PINECONE_INDEX_NAME is not defined in environment variables.');
+    }
 
     const existingNamespace = await Namespace.findOne({
       name: namespaceName as string,
@@ -36,52 +34,60 @@ export default async function handler(
       await newNamespace.save();
     }
 
-    // Load PDF files from the specified directory
+
+    // Load files from directory
     const directoryLoader = new DirectoryLoader(filePath, {
       '.pdf': (path) => new PDFLoader(path),
-      '.docx': (path) => new DocxLoader(path),
-      '.txt': (path) => new TextLoader(path),
     });
 
     const rawDocs = await directoryLoader.load();
+    if (!rawDocs.length) {
+      throw new Error('No documents found in the specified directory.');
+    }
 
-    // Split the PDF documents into smaller chunks
+    // Split the documents into chunks
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: Number(chunkSize),
-      chunkOverlap: Number(overlapSize),
+      chunkSize: parseInt(chunkSize as string, 10),
+      chunkOverlap: parseInt(overlapSize as string, 10),
     });
 
-    const docs = await textSplitter.splitDocuments(rawDocs);
+    const splitDocs = await textSplitter.splitDocuments(rawDocs);
+    if (!splitDocs.length) {
+      throw new Error('Failed to split documents into smaller chunks.');
+    }
 
-    // OpenAI embeddings for the document chunks
-    const embeddings = new OpenAIEmbeddings();
+    // Generate embeddings
+    const hfEmbeddings = new HuggingFaceInferenceEmbeddings({
+      apiKey:process.env.HUGGING_FACE_API_KEY,
+      model: 'Craig/paraphrase-MiniLM-L6-v2',
+    });
 
-    // Get the Pinecone index with the given name
+    const texts = splitDocs.map((doc) => doc.pageContent);
+    const embeddings = await hfEmbeddings.embedDocuments(texts);
+    if (!embeddings || embeddings.length !== texts.length) {
+      throw new Error('Failed to generate embeddings or mismatched embedding count.');
+    }
+
+    // Prepare upsert payload
+    const vectors = splitDocs.map((doc, index) => ({
+      id: `${namespaceName}-${index}`, // Unique ID
+      values: embeddings[index], // Embedding vector
+      metadata: { text: doc.pageContent }, // Metadata
+    }));
+
+    // Debugging: Log the vectors structure
+    console.log('Upserting vectors to Pinecone:', JSON.stringify(vectors, null, 2));
+
+    // Initialize Pinecone index
     const index = pinecone.Index(PINECONE_INDEX_NAME);
+    const namespace = index.namespace(convertToAscii(namespaceName as string));
 
-    // Store the document chunks in Pinecone with their embeddings
-    await PineconeStore.fromDocuments(docs, embeddings, {
-      pineconeIndex: index,
-      namespace: namespaceName as string,
-      textKey: 'text',
-    });
-
-    // Delete the PDF, DOCX and TXT files
-    const filesToDelete = fs
-      .readdirSync(filePath)
-      .filter(
-        (file) =>
-          file.endsWith('.pdf') ||
-          file.endsWith('.docx') ||
-          file.endsWith('.txt'),
-      );
-    filesToDelete.forEach((file) => {
-      fs.unlinkSync(`${filePath}/${file}`);
-    });
+    // Upsert vectors in Pinecone
+    await namespace.upsert(vectors);
 
     res.status(200).json({ message: 'Data ingestion complete' });
   } catch (error) {
-    console.log('error', error);
-    res.status(500).json({ error: 'Failed to ingest your data' });
+    console.error('Error during data ingestion:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
