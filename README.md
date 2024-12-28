@@ -45,7 +45,7 @@ Follow the instructions below to set up and run ChatHive locally.
 ### **1. Clone the Repository**
 
 ```bash
-git clone https://github.com/dissorial/doc-chatbot.git --branch mongodb-and-auth
+git clone https://github.com/hisachin/chathive.git --branch master
 
 ```
 
@@ -53,7 +53,7 @@ git clone https://github.com/dissorial/doc-chatbot.git --branch mongodb-and-auth
 1. Create an account on [Pinecone](https://www.pinecone.io/).
 2. Go to **Indexes** > **Create Index**:
    - **Name:** Choose any name.
-   - **Dimensions:** Set to `1536` (required for OpenAI embeddings).
+   - **Dimensions:** Set to `1536` (required for OpenAI embeddings) or Set to `384` (required for HiggingFace embeddings).
    - Leave other fields as default.
 3. Navigate to **API Keys** and create a new key.
 4. Save the **API Key** and **Environment** values.
